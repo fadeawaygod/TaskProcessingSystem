@@ -1,0 +1,23 @@
+[tool.pyright]
+include = ["app"]
+exclude = ["**/migrations",
+    "**/__pycache__",
+    "**/.venv",
+    "**/venv"
+]
+defineConstant = { DEBUG = true }
+venv = "env3813"
+
+reportGeneralTypeIssues = "none"
+reportImplicitStringConcatenation = "none"
+reportPrivateImportUsage = "none"
+reportUnsupportedDunderAll = "none"
+pythonVersion = "3.8"
+pythonPlatform = "Linux"
+
+[tool.black]
+line-length = 127
+
+[tool.isort]
+line_length = 127
+profile = "black"
