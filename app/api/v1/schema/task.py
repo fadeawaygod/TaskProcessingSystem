@@ -12,9 +12,7 @@ class BaseTask(BaseModel):
     """Task schema base for inherit and request body on POST API."""
 
     type: TaskType = Field(..., title="type", description="The type of task", example=TaskType.SLEEP)
-    parameters: Dict[str, Any] = Field(
-        {}, title="parameters", description="The parameters of task", example={"sleep_seconds": 3}
-    )
+    parameters: Dict[str, Any] = Field({}, title="parameters", description="The parameters of task", example={})
 
 
 class Task(BaseTask):

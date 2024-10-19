@@ -1,17 +1,15 @@
-import json
 from typing import Dict, Optional, Union
 
 import redis
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.const.task import TASK_QUEUE_NAME
 from app.database.crud import task as crud_task
 from app.database.models.task import Task
 from app.enum.task import TaskStatus, TaskType
 from app.utils.logging.logger import get_logger
 
 logger = get_logger()
-
-TASK_QUEUE_NAME = "Task_processing_system:task_queue"
 
 
 async def create_and_publish_task(

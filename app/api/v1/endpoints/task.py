@@ -2,6 +2,9 @@
 Definition of the task endpoints for the service.
 """
 
+from typing import Union
+
+import redis
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -25,7 +28,7 @@ router: APIRouter = APIRouter()
 async def post_task(
     request_body: CreateTask,
     db: AsyncSession = Depends(get_db_session),
-    redis: AsyncSession = Depends(get_redis_session),
+    redis: Union[redis.Redis, redis.RedisCluster] = Depends(get_redis_session),
 ) -> Task:
 
     task = await create_and_publish_task(

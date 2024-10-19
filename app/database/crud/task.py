@@ -68,6 +68,17 @@ async def list_tasks(
     return list(result.scalars().all())
 
 
+async def get_task(db: AsyncSession, id: str) -> Task:
+    """
+    Get tasks by conditions
+    """
+    query = select(Task)
+    query = query.where(Task.id == id)
+
+    result = await db.execute(query)
+    return result.scalars().one()
+
+
 async def count_tasks(
     db: AsyncSession,
     status_list: Optional[List[TaskStatus]] = None,
@@ -88,6 +99,7 @@ async def update_task(
     result: Optional[Dict[str, str]] = None,
     status: Optional[TaskStatus] = None,
     error_message: Optional[str] = None,
+    error_code: Optional[int] = None,
     started_at: Optional[datetime] = None,
     ended_at: Optional[datetime] = None,
     auto_commit: bool = True,
@@ -96,15 +108,17 @@ async def update_task(
     Update the task by id
     """
     data = {}
-    if result:
+    if result is not None:
         data["result"] = result
-    if status:
+    if status is not None:
         data["status"] = status
-    if error_message:
+    if error_message is not None:
         data["error_message"] = error_message
-    if started_at:
+    if error_code is not None:
+        data["error_code"] = error_code
+    if started_at is not None:
         data["started_at"] = started_at
-    if ended_at:
+    if ended_at is not None:
         data["ended_at"] = ended_at
 
     query = update(Task).values(**data).where(Task.id == task_id).returning(Task)
