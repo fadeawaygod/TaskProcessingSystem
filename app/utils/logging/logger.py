@@ -67,9 +67,7 @@ def try_add_handler(logger: logging.Logger, handler: logging.Handler):
         logger.addHandler(handler)
 
 
-def get_logger(
-    stream: bool = True, file: bool = True, alert: bool = True, handlers: List[logging.Handler] = None
-) -> logging.Logger:
+def get_logger(stream: bool = True, file: bool = False, handlers: List[logging.Handler] = None) -> logging.Logger:
     """Get the logger and support additional custom handlers in different classes."""
     logger = logging.getLogger(name=LOGGER_NAME)
     logger.propagate = False
