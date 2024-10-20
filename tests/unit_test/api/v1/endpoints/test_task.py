@@ -2,6 +2,7 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 from fastapi.testclient import TestClient
+from sqlalchemy.exc import SQLAlchemyError
 
 from app.database.models.task import Task
 from app.enum.task import TaskStatus, TaskType
@@ -32,17 +33,14 @@ async def test_get_tasks_normal_return():
             )
         ]
         mock_result_1.scalars.return_value = mock_scalars_1
-        mock_session.execute.return_value = mock_result_1
 
         mock_result_2 = MagicMock()
         mock_scalars_2 = MagicMock()
         mock_scalars_2.one.return_value = 1
         mock_result_2.scalars.return_value = mock_scalars_2
-        mock_session.execute.return_value = mock_result_2
 
         mock_execute_side_effect = [mock_result_1, mock_result_2]
-        mock_session.execute.side_effect = mock_execute_side_effect
-        return mock_session
+        return mock_execute_side_effect
 
     with override_get_db(
         app=app,
@@ -69,3 +67,13 @@ async def test_get_tasks_normal_return():
             }
         ],
     }
+
+
+@pytest.mark.asyncio
+async def test_get_tasks_db_connection_failed():
+    with override_get_db(
+        app=app,
+        execute_side_effect=[SQLAlchemyError("Connection failed")],
+    ):
+        with pytest.raises(SQLAlchemyError):
+            client.get("/api/v1/tasks")
