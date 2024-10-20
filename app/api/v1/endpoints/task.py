@@ -11,13 +11,16 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.api.v1.schema.generic import ListResponse
 from app.api.v1.schema.task import CreateTask, Task
 from app.database.crud import task as crud_task
-from app.database.models.task import Task as TaskModel
+from app.enum.task import TaskStatus
 from app.middleware.depends import get_db_session, get_redis_session
+from app.utils.exceptions.task import JobCannotBeCancelled
 from app.utils.logging.logger import get_logger
 from app.utils.task.task import create_and_publish_task
 
 logger = get_logger()
 router: APIRouter = APIRouter()
+
+STATUS_LIST_CAN_BE_CANCELLED = [TaskStatus.PENDING, TaskStatus.PROCESSING]
 
 
 @router.post(
@@ -36,6 +39,30 @@ async def post_task(
         redis=redis,
         type=request_body.type,
         parameters=request_body.parameters,
+    )
+    return task
+
+
+@router.post(
+    "{task_id}/cancel",
+    description="cancel a task.",
+    response_model=Task,
+)
+async def cancel_task(
+    task_id: str,
+    db: AsyncSession = Depends(get_db_session),
+) -> Task:
+
+    task = await crud_task.get_task(db=db, id=task_id)
+    if task.status not in STATUS_LIST_CAN_BE_CANCELLED:
+        raise JobCannotBeCancelled(
+            current_status=task.status,
+            allowed_status=str(STATUS_LIST_CAN_BE_CANCELLED),
+        )
+    task = await crud_task.update_task(
+        db=db,
+        task_id=task_id,
+        status=TaskStatus.CANCELED,
     )
     return task
 

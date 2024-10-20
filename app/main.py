@@ -58,29 +58,7 @@ logger = get_logger()
 app = get_application()
 
 
-async def http_exception_handler(request: Request, exception: HTTPException) -> JSONResponse:
-    """Handle http exceptions."""
-    response = {
-        "detail": str(exception.detail),
-        "code": DEFAULT_ERROR_CODE,
-        "parameters": {},
-    }
-    status_code = exception.status_code
-    return JSONResponse(content=response, status_code=status_code, headers=DEFAULT_RESPONSE_HEADER)
-
-
-async def database_error_handler(request: Request, exception: SQLAlchemyError) -> JSONResponse:
-    """Handle SQLAlchemyErrors."""
-    error = UnknownDatabaseError(error=str(exception))
-    response = {
-        "detail": error.message,
-        "code": error.code,
-        "parameters": error.parameters,
-    }
-    status_code = error.status_code
-    return JSONResponse(content=response, status_code=status_code, headers=DEFAULT_RESPONSE_HEADER)
-
-
+@app.exception_handler(Exception)
 async def exception_handler(request: Request, exception: Exception) -> JSONResponse:
     """Handle other exceptions."""
     logger.warning(

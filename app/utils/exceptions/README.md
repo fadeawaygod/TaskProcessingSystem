@@ -12,7 +12,7 @@ The rule of error code is: type{1 digit}app{2 digit}serial{2 digit}
   - 1XXXX: general
   - 2XXXX: database
   - 3XXXX: data validation
-  - 4XXXX: job
+  - 4XXXX: task
 
 - app code:
   - x00xx: general
