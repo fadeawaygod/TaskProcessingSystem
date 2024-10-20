@@ -1,19 +1,14 @@
-import asyncio
-import functools
-import traceback
 from contextlib import asynccontextmanager
 from http import HTTPStatus
 
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy.exc import SQLAlchemyError
 from starlette.responses import JSONResponse
 
 from app.api import health
 from app.api.v1.api import api_router
 from app.core.config import settings
 from app.database.init_db import init_db
-from app.utils.exceptions.db import UnknownDatabaseError
 from app.utils.logging.logger import get_logger
 from app.utils.middleware.app_version import AppVersionMiddleware
 

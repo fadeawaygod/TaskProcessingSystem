@@ -24,11 +24,11 @@ class Settings(BaseSettings):
     # database
     # enable this if you want to build a new db in your local
     DO_INIT_DB: bool = False
-    POSTGRES_HOST: str
-    POSTGRES_PORT: str
-    POSTGRES_USER: str
-    POSTGRES_PASSWORD: str
-    POSTGRES_DB: str
+    POSTGRES_HOST: str = "127.0.0.1"
+    POSTGRES_PORT: str = "5432"
+    POSTGRES_USER: str = "postgres"
+    POSTGRES_PASSWORD: str = "postgres"
+    POSTGRES_DB: str = "task-processing-system-dev"
     DATABASE_URI: Optional[PostgresDsn] = None
     DB_POOL_SIZE: int = 40
     DB_MAX_OVERFLOW: int = 10

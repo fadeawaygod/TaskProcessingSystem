@@ -76,17 +76,17 @@ async def get_tasks(
     offset: int = Query(
         0,
         description="Optional, determine the number of rows need be skipped",
-        example=0,
+        examples=[0],
     ),
     limit: int = Query(
         0,
         description="Optional, determine the number of returned rows after skipped offset, if it is 0, return all items",
-        example=0,
+        examples=[0],
     ),
     order_by: str = Query(
         "created_at:desc",
         description="Optional, order items by asc or desc with comma-separated list of : pairs, default is created_at:desc.",
-        example="created_at:desc",
+        examples=["created_at:desc"],
     ),
     db: AsyncSession = Depends(get_db_session),
 ) -> ListResponse[Task]:
@@ -102,4 +102,4 @@ async def get_tasks(
     tasks_total = await crud_task.count_tasks(
         db=db,
     )
-    return ListResponse(data=tasks, total=tasks_total)
+    return ListResponse(data=tasks, total=tasks_total)  # type: ignore
