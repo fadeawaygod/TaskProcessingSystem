@@ -24,6 +24,10 @@ def mock_db_session():
             type=TaskType.SLEEP,
             parameters={},
             result={},
+            created_at="2022-01-01 00:00:00",
+            updated_at="2022-01-01 00:00:00",
+            started_at="2022-01-01 00:00:00",
+            ended_at="2022-01-01 00:00:00",
         )
     ]
     mock_result_1.scalars.return_value = mock_scalars_1
@@ -51,4 +55,22 @@ def override_get_db(mock_db_session):
 async def test_get_tasks(override_get_db):
     response = client.get("/api/v1/tasks")
     assert response.status_code == 200
-    assert response.json() == {"Hello": "World"}
+    response_json = response.json()
+    assert response_json == {
+        "total": 1,
+        "data": [
+            {
+                "type": "SLEEP",
+                "parameters": {},
+                "id": "test",
+                "result": {},
+                "error_code": None,
+                "error_message": None,
+                "status": "PENDING",
+                "created_at": "2022-01-01T00:00:00",
+                "updated_at": "2022-01-01T00:00:00",
+                "started_at": "2022-01-01T00:00:00",
+                "ended_at": "2022-01-01T00:00:00",
+            }
+        ],
+    }
