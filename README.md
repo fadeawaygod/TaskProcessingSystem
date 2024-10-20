@@ -3,12 +3,66 @@
 ## Description
 This project provides a high-throughput task processing system using asynchronous APIs to send and consume tasks from a message queue, ensuring scalability, performance and reliability.
 
+## Project structure
+
+**Task Processing System**
+==========================
+
+**Application Directory**
+------------------------
+
+* `app/`: This is the main application directory, containing all the code for the task processing system.
+	+ **Core**: This directory contains the core functionality of the application.
+		- `core/`: This directory contains the core application logic, including configuration, database, and exceptions.
+			- **Database**: This directory contains the database-related code, including CRUD operations and models.
+				- `database/`: This directory contains the database-related code.
+					- **CRUD Operations**: This directory contains the CRUD (Create, Read, Update, Delete) operations for the database.
+						- `crud/`: This directory contains the CRUD operations.
+					- **Models**: This directory contains the database models.
+						- `models/`: This directory contains the database models.
+			- **Enumerations**: This directory contains enumerations used throughout the application.
+				- `enum/`: This directory contains enumerations.
+			- **Exceptions**: This directory contains custom exceptions used throughout the application.
+				- `exceptions/`: This directory contains custom exceptions.
+			- **Helper Functions**: This directory contains helper functions used throughout the application.
+			- **Logging**: This directory contains logging-related code.
+				- `logging/`: This directory contains logging-related code.
+			- **Middleware**: This directory contains middleware-related code.
+				- `middleware/`: This directory contains middleware-related code.
+			- **Utilities**: This directory contains utility functions used throughout the application.
+				- `utils/`: This directory contains utility functions.
+	+ **API**: This directory contains API-related code.
+		- `api/`: This directory contains API-related code.
+			- **Version 1**: This directory contains the API version 1 code.
+				- `v1/`: This directory contains the API version 1 code.
+					- **Endpoints**: This directory contains the API endpoints.
+						- `endpoints/`: This directory contains the API endpoints.
+					- **Schema**: This directory contains the API schema.
+						- `schema/`: This directory contains the API schema.
+	+ **Worker**: This directory contains worker-related code.
+		- `worker/`: This directory contains worker-related code.
+			- **Task Handlers**: This directory contains task handlers.
+				- `task_handler/`: This directory contains task handlers.
+
+**Tests**
+--------
+
+* `tests/`: This directory contains unit tests for the application.
+
+**Documentation**
+-------------
+
+* `app/doc/`: This directory contains documentation for the application.
+	+ `diagram/`: This directory contains diagrams for the application.
+
+## Diagram
 - [db diagram](app/doc/diagram/db_table_diagram.md)
 - [sequence diagram](app/doc/diagram/sequence_diagram.md)
 
 # Run with Docker Compose
 ## Environment
 - Ubuntu 20.04
+- Docker 25.0.2
 
 ## Run Steps
 1. cd into this folder.
@@ -20,7 +74,7 @@ This project provides a high-throughput task processing system using asynchronou
 # Debug with VS Code Locally
 ## Environment
 - Ubuntu 20.04
-- Python 3.11
+- Python 3.8
 - PostgresSQL server at 127.0.0.1:5432
   - db name: `task-processing-system-dev`
 - Redis server at 127.0.0.1:6379
