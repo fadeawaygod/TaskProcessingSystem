@@ -6,6 +6,17 @@ This project provides a high-throughput task processing system using asynchronou
 - [db diagram](app/doc/diagram/db_table_diagram.md)
 - [sequence diagram](app/doc/diagram/sequence_diagram.md)
 
+# Run with Docker Compose
+## Environment
+- Ubuntu 20.04
+
+## Run Steps
+1. cd into this folder.
+2. run `docker build -t task-processing-system .`.
+3. run `docker build -t task-processing-system-worker -f Dockerfile.worker .`.
+4. run `docker-compose up -d`.
+5. To stop, run `docker-compose down`.
+
 # Debug with VS Code Locally
 ## Environment
 - Ubuntu 20.04
@@ -23,40 +34,35 @@ This project provides a high-throughput task processing system using asynchronou
 
 ### example of api server configuration in launch.json of VS Code
 ```json
- {
-            "name": "Python: API Server Local DB",
-            "type": "debugpy",
-            "request": "launch",
-            "module": "uvicorn",
-            "args": [
-                "app.main:app",
-                "--port",
-                "8000",
-                "--host",
-                "0.0.0.0"
-            ],
-            "env": {
-                "DO_INIT_DB": "true",
-                "POSTGRES_HOST": "127.0.0.1",
-                "POSTGRES_PORT": "5432",
-                "POSTGRES_USER": "postgres",
-                "POSTGRES_PASSWORD": "xxx",
-                "POSTGRES_DB": "task-processing-system-dev",
-                "REDIS_HOST": "127.0.0.1",
-                "REDIS_PORT": "6379",
-                "EVENT_BUS_REDIS_HOST": "127.0.0.1",
-                "EVENT_BUS_REDIS_PORT": "6379",
-                "LONG_TIME_CACHE_REDIS_HOST": "127.0.0.1",
-                "LONG_TIME_CACHE_REDIS_PORT": "6379",
-                "LONG_TIME_IS_REDIS_CLUSTER": "false",
-                "EVENT_BUS_IS_REDIS_CLUSTER": "false",
-                "BACKEND_CORS_ORIGINS": "http://localhost:3000",
-                "PORT": "8000",
-                "LOGGER_LEVEL": "DEBUG",
-                "API_ROOT_PATH": "",
-            },
-            "justMyCode": true,
-        }
+{
+    "name": "Python: API Server Local DB",
+    "type": "debugpy",
+    "request": "launch",
+    "module": "uvicorn",
+    "args": [
+        "app.main:app",
+        "--port",
+        "8000",
+        "--host",
+        "0.0.0.0"
+    ],
+    "env": {
+        "DO_INIT_DB": "true",
+        "POSTGRES_HOST": "127.0.0.1",
+        "POSTGRES_PORT": "5432",
+        "POSTGRES_USER": "postgres",
+        "POSTGRES_PASSWORD": "xxx",
+        "POSTGRES_DB": "task-processing-system-dev",
+        "REDIS_HOST": "127.0.0.1",
+        "REDIS_PORT": "6379",
+        "EVENT_BUS_IS_REDIS_CLUSTER": "false",
+        "BACKEND_CORS_ORIGINS": "http://localhost:3000",
+        "PORT": "8000",
+        "LOGGER_LEVEL": "DEBUG",
+        "API_ROOT_PATH": "",
+    },
+    "justMyCode": true,
+}
 ```
 ## Debug Steps(api server worker)
 1. cd into this folder.
@@ -66,36 +72,28 @@ This project provides a high-throughput task processing system using asynchronou
 
 ### example of api server worker configuration in launch.json of VS Code
 ```json
- {
-            "name": "Python: API Server Local DB",
-            "type": "debugpy",
-            "request": "launch",
-            "module": "python",
-            "args": [
-                "app.worker_main:app",
-            ],
-            "env": {
-                "DO_INIT_DB": "true",
-                "POSTGRES_HOST": "127.0.0.1",
-                "POSTGRES_PORT": "5432",
-                "POSTGRES_USER": "postgres",
-                "POSTGRES_PASSWORD": "xxx",
-                "POSTGRES_DB": "task-processing-system-dev",
-                "REDIS_HOST": "127.0.0.1",
-                "REDIS_PORT": "6379",
-                "EVENT_BUS_REDIS_HOST": "127.0.0.1",
-                "EVENT_BUS_REDIS_PORT": "6379",
-                "LONG_TIME_CACHE_REDIS_HOST": "127.0.0.1",
-                "LONG_TIME_CACHE_REDIS_PORT": "6379",
-                "LONG_TIME_IS_REDIS_CLUSTER": "false",
-                "EVENT_BUS_IS_REDIS_CLUSTER": "false",
-                "BACKEND_CORS_ORIGINS": "http://localhost:3000",
-                "PORT": "8000",
-                "LOGGER_LEVEL": "DEBUG",
-                "API_ROOT_PATH": "",
-            },
-            "justMyCode": true,
-        }
+{
+    "name": "Python: API Server Worker Local DB",
+    "type": "debugpy",
+    "request": "launch",
+    "program": "app/worker_main.py",
+    "console": "integratedTerminal",
+    "env": {
+        "DO_INIT_DB": "true",
+        "POSTGRES_HOST": "127.0.0.1",
+        "POSTGRES_PORT": "5432",
+        "POSTGRES_USER": "postgres",
+        "POSTGRES_PASSWORD": "xxx",
+        "POSTGRES_DB": "task-processing-system-dev",
+        "REDIS_HOST": "127.0.0.1",
+        "REDIS_PORT": "6379",
+        "BACKEND_CORS_ORIGINS": "http://localhost:3000",
+        "PORT": "8000",
+        "LOGGER_LEVEL": "DEBUG",
+        "API_ROOT_PATH": "",
+    },
+    "justMyCode": true,
+}
 ```
 
 # Notice
@@ -114,13 +112,3 @@ alembic revision --autogenerate -m "${revision_message}"
 4. check the generated file in `migrations/versions`
 ### do db migration
 1. set the env variable: `DO_INIT_DB` to true, and run the server.
-
-# API Server Worker
-
-## Build Docker Images
-It can be compiled locally through the following syntax
-```
-docker build -t task-processing-system-worker -f Dockerfile.worker .
-```
-
-> Note: Please adjust Tag according to actual needs
