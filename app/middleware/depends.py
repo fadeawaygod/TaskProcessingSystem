@@ -5,6 +5,7 @@ from typing import AsyncGenerator, Union
 import redis.asyncio as redis
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.config import settings
 from app.database.db import session_factory
 from app.utils.logging.logger import get_logger
 from app.utils.redis import setup_redis_connection
@@ -43,8 +44,8 @@ def get_redis_session() -> Union[redis.Redis, redis.RedisCluster]:
 
 
 global_redis_session = setup_redis_connection(
-    host="127.0.0.1",
-    port=6379,
-    is_cluster=False,
+    host=settings.REDIS_HOST,
+    port=settings.REDIS_PORT,
+    is_cluster=settings.IS_REDIS_CLUSTER,
     retry_on_error=[ConnectionError, TimeoutError],
 )
