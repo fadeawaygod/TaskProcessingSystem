@@ -166,3 +166,24 @@ alembic revision --autogenerate -m "${revision_message}"
 4. check the generated file in `migrations/versions`
 ### do db migration
 1. set the env variable: `DO_INIT_DB` to true, and run the server.
+
+# Future Work
+## Add more features
+- authentication&authorization
+- priority queue
+- fast queue& slow queue
+- websocket for real-time updates
+
+## infra
+- rate limiter
+- cache of get jobs
+- introduce EFK
+- introduce k8s, prometheus and grafana
+- replace redis with redis cluster(or Kafka)
+- CI-CD
+
+# tests
+- Add more unit tests
+- Add integration tests
+- Add performance tests
+- test coverage
