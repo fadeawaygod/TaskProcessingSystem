@@ -1,5 +1,5 @@
 from contextlib import contextmanager
-from typing import Any, Awaitable, Coroutine, List
+from typing import Any, Coroutine, List
 from unittest.mock import AsyncMock, MagicMock
 
 from fastapi import FastAPI
