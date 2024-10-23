@@ -44,7 +44,7 @@ async def post_task(
 
 
 @router.post(
-    "{task_id}/cancel",
+    "/{task_id}/cancel",
     description="cancel a task.",
     response_model=Task,
 )
