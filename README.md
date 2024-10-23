@@ -150,6 +150,17 @@ This project provides a high-throughput task processing system using asynchronou
 }
 ```
 
+# Run Unit Test
+## Environment
+- Ubuntu 20.04
+- Python 3.8
+
+Steps
+1. cd into this folder.
+2. run `pip install -r requirements.txt`.
+3. run `pip install -r requirements_for_test.txt`.
+4. run `pytest -c pytest.ini`
+
 # Notice
 
 ## DB Migrations
@@ -178,6 +189,7 @@ alembic revision --autogenerate -m "${revision_message}"
 - rate limiter
 - cache of get jobs
 - introduce EFK
+- introduce load balancer&reverse proxy, e.g. nginx
 - introduce k8s, prometheus and grafana
 - replace redis with redis cluster(or Kafka)
 - CI-CD
