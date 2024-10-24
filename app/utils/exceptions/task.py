@@ -19,7 +19,7 @@ class TaskRuntimeError(BaseCustomException):
     error: str
     _status_code = HTTPStatus.INTERNAL_SERVER_ERROR
     _code = 40000
-    _message = "job runtime error: {error}."
+    _message = "task runtime error: {error}."
 
 
 @dataclass
@@ -30,4 +30,4 @@ class JobCannotBeCancelled(BaseCustomException):
     allowed_status: str
     _status_code = HTTPStatus.INTERNAL_SERVER_ERROR
     _code = 40001
-    _message = "job cannot be cancelled, current status: {current_status}, allowed status: {allowed_status}."
+    _message = "task cannot be cancelled, current status: {current_status}, allowed status: {allowed_status}."

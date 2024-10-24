@@ -185,14 +185,17 @@ alembic revision --autogenerate -m "${revision_message}"
 - fast queue& slow queue
 - websocket for real-time updates
 
+
 ## infra
 - rate limiter
-- cache of get jobs
+- cache of get tasks
 - introduce EFK
 - introduce load balancer&reverse proxy, e.g. nginx
 - introduce k8s, prometheus and grafana
 - replace redis with redis cluster(or Kafka)
 - CI-CD
+- delete task in Stream when the task is cancelled
+- auto clean up processed task in Stream
 
 # tests
 - Add more unit tests

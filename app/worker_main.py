@@ -5,7 +5,7 @@ from app.core.config import settings
 from app.enum.task import TaskType
 from app.utils.logging.logger import get_logger
 from app.utils.redis import setup_redis_connection
-from app.worker.base_job_consumer import BaseTaskConsumer
+from app.worker.base_task_consumer import BaseTaskConsumer
 from app.worker.task_handler.sleep_handler import SleepHandler
 
 logger = get_logger()
