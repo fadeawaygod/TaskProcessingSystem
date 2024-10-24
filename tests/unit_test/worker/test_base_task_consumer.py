@@ -115,6 +115,59 @@ async def test_run_db_connection_error_should_not_ack():
 
 
 @pytest.mark.asyncio
+async def test_run_message_invalid_should_not_ack():
+    def get_execute_side_effect():
+        mock_result_1 = MagicMock()
+        mock_scalars_1 = MagicMock()
+        mock_scalars_1.all.return_value = [
+            Task(
+                id="test",
+                status=TaskStatus.PENDING,
+                type=TaskType.SLEEP,
+                parameters={},
+                result={},
+                created_at="2022-01-01 00:00:00",
+                updated_at="2022-01-01 00:00:00",
+                started_at="2022-01-01 00:00:00",
+                ended_at="2022-01-01 00:00:00",
+            )
+        ]
+        mock_result_1.scalars.return_value = mock_scalars_1
+
+        mock_result_2 = MagicMock()
+        mock_scalars_2 = MagicMock()
+        mock_scalars_2.one.return_value = 1
+        mock_result_2.scalars.return_value = mock_scalars_2
+
+        mock_execute_side_effect = [mock_result_1]
+        return mock_execute_side_effect
+
+    db_execute_side_effect = get_execute_side_effect()
+    with patch(
+        "app.worker.base_task_consumer.get_db_session_context_manager",
+        return_value=make_fake_db_async_context_manager(execute_side_effect=db_execute_side_effect),
+    ):
+        invalid_message = "invalid_message_payload"
+        fake_redis_connection = _make_fake_redis_connection(
+            xautoclaim_side_effect=[
+                (
+                    None,
+                    [invalid_message],
+                    None,
+                ),
+                KeyboardInterrupt(),
+            ],
+        )
+        await BaseTaskConsumer(
+            redis_connection=fake_redis_connection,  # type: ignore
+            task_handlers={TaskType.SLEEP: AsyncMock()},
+            queue_name="test",
+        ).run()
+
+    fake_redis_connection.xack.assert_not_called()
+
+
+@pytest.mark.asyncio
 async def test_run_cancelled_should_not_run_but_ack():
     def get_execute_side_effect():
         mock_result_1 = MagicMock()

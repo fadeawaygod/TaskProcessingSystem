@@ -171,8 +171,8 @@ class BaseTaskConsumer:
         self,
         message: dict,
     ):
-        message_id, task_payload = message
         try:
+            message_id, task_payload = message
             async with get_db_session_context_manager() as db:
                 self._task = await crud_task.get_task(db=db, id=task_payload["task_id"])
             if self._task.status == TaskStatus.PENDING:
