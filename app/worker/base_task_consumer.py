@@ -1,8 +1,7 @@
 import asyncio
 import time
 import uuid
-from datetime import datetime
-from typing import Dict, List, Optional, Type, Union
+from typing import Dict, List, Optional, Union
 
 import redis.asyncio as async_redis
 from redis import ResponseError
@@ -39,6 +38,7 @@ class BaseTaskConsumer:
         task_handlers: Dict[TaskType, BaseHandler],
         queue_name: str,
         consumer_group_name: str = "default_group",
+        max_retry_count: int = 3,
     ):
 
         self._redis_connection = redis_connection
@@ -47,19 +47,31 @@ class BaseTaskConsumer:
         self._consumer_group_name = consumer_group_name
         self._consumer_name = f"{consumer_group_name}_{uuid.uuid4()}"
         self._task = None
+        self._max_retry_count = max_retry_count
 
     async def run(self):
         """Continuously runs the EventBusConsumer to handle pending and new messages."""
         await self._create_consumer_group_if_not_exists()
+        retried_count = 0
         while True:
             messages = []
             try:
                 messages = await self._auto_claim_messages(count=DEFAULT_READ_MESSAGE_COUNT)
+                retried_count = 0
                 if not messages:
                     messages = await self._get_new_messages(count=DEFAULT_READ_MESSAGE_COUNT)
+            except KeyboardInterrupt:
+                logger.info(f"KeyboardInterrupt, stop the consumer group({self._consumer_group_name})")
+                break
             except Exception as e:
                 logger.error(f"TaskConsumer: Failed to retrieve message, error: {e}")
-                await asyncio.sleep(CLAIM_RETRY_INTERVAL)
+                if retried_count >= self._max_retry_count:
+                    logger.error(
+                        f"TaskConsumer: Failed to retrieve message after {retried_count} retries, stop the consumer group({self._consumer_group_name})"
+                    )
+                    break
+                await asyncio.sleep(2**retried_count - 1)
+                retried_count += 1
                 continue
 
             for message in messages:
@@ -155,28 +167,12 @@ class BaseTaskConsumer:
                 error_code=getattr(error, "code", 1),
             )
 
-    async def _on_message(self, task: Task, message: dict):
-        updated_task = BaseUpdateTask(
-            id=task.id,
-            info_event=TaskEventType.MESSAGE,
-            affect=EventResourceAffect.CHANGE,
-            task=UpdateTaskDetail(id=task.id, data=message),
-        )
-        await self._producer.publish(updated_task)
-        return
-
-    async def _send_reply(self, task: Task, data: dict):
-        await self._on_message(task, data)
-        return
-
     async def _process_message(
         self,
         message: dict,
     ):
+        message_id, task_payload = message
         try:
-            message_id, task_payload = message
-            await self._ack_message(message_id)
-
             async with get_db_session_context_manager() as db:
                 self._task = await crud_task.get_task(db=db, id=task_payload["task_id"])
             if self._task.status == TaskStatus.PENDING:
@@ -185,7 +181,6 @@ class BaseTaskConsumer:
                     if not handler:
                         logger.error(f"TaskConsumer: Failed to get handler for task type: {self._task.type}")
                         raise Exception(f"TaskConsumer: Failed to get handler for task type: {self._task.type}")
-
                     await self._on_start(self._task)
                     start_time = time.time()
                     await handler.handle(self._task)
@@ -197,5 +192,6 @@ class BaseTaskConsumer:
                     await self._on_error(self._task, e)
             else:
                 logger.warning(f"The task: {self._task.id} is in {self._task.status}, skip it")
+            await self._ack_message(message_id)
         except Exception as e:
             logger.error(f"TaskConsumer: Failed to process message: {message}, error:{e}")
